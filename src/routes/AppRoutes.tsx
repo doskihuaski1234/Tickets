@@ -3,56 +3,66 @@ import {
   Routes,
   Route,
   Navigate
-} from 'react-router-dom'
+} from 'react-router-dom';
 
-import { useState } from 'react'
+import { useState } from 'react';
 
-import Dashboard from '../pages/Dashboard'
-import Tickets from '../pages/Tickets'
-import NuevaOrden from '../pages/NuevaOrden'
-import MapaPage from '../pages/MapaPage'
+import Dashboard from '../pages/Dashboard';
+import Tickets from '../pages/Tickets';
+import NuevaOrden from '../pages/NuevaOrden';
+import MapaPage from '../pages/MapaPage';
+
+import type { Ticket, TicketStatus } from '../types/tickets';
 
 export default function AppRoutes() {
 
-  const [tickets, setTickets] = useState<any[]>([])
+  const [tickets, setTickets] = useState<Ticket[]>([]);
 
+  // ➜ Crear ticket
   const addTicket = (
     title: string,
     description: string,
     location: string
   ) => {
 
-    const newTicket = {
-      id: Date.now(),
+    const newTicket: Ticket = {
+      id: Date.now().toString(),
       title,
       description,
-      location,
-      status: 'Pendiente'
-    }
+      status: 'abierto',
+      createdAt: new Date().toISOString(),
+      empresa: '',
+      sucursal: '',
+      departamento: '',
+      municipio: '',
+      direccion: location,
+    };
 
-    setTickets([...tickets, newTicket])
-  }
+    setTickets((prev) => [...prev, newTicket]);
+  };
 
+  // ➜ Cambiar estado
   const updateStatus = (
-    id: number,
-    status: string
+    id: string,
+    status: TicketStatus
   ) => {
 
-    setTickets(
-      tickets.map((t) =>
+    setTickets((prev) =>
+      prev.map((t) =>
         t.id === id
           ? { ...t, status }
           : t
       )
-    )
-  }
+    );
+  };
 
-  const deleteTicket = (id: number) => {
+  // ➜ Eliminar
+  const deleteTicket = (id: string) => {
 
-    setTickets(
-      tickets.filter((t) => t.id !== id)
-    )
-  }
+    setTickets((prev) =>
+      prev.filter((t) => t.id !== id)
+    );
+  };
 
   return (
     <BrowserRouter>
@@ -74,8 +84,8 @@ export default function AppRoutes() {
           element={
             <Tickets
               tickets={tickets}
-              updateStatus={updateStatus}
-              deleteTicket={deleteTicket}
+              onUpdateStatus={updateStatus}
+              onDelete={deleteTicket}
             />
           }
         />
@@ -84,18 +94,20 @@ export default function AppRoutes() {
           path="/nueva"
           element={
             <NuevaOrden
-              addTicket={addTicket}
+              onAddTicket={addTicket}
             />
           }
         />
 
         <Route
           path="/mapa"
-          element={<MapaPage />}
+          element={
+            <MapaPage tickets={tickets} />
+          }
         />
 
       </Routes>
 
     </BrowserRouter>
-  )
+  );
 }
