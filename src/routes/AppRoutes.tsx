@@ -18,35 +18,13 @@ export default function AppRoutes() {
 
   const [tickets, setTickets] = useState<Ticket[]>([]);
 
-  // ➜ Crear ticket
-  const addTicket = (
-    title: string,
-    description: string,
-    location: string
-  ) => {
-
-    const newTicket: Ticket = {
-      id: Date.now().toString(),
-      title,
-      description,
-      status: 'abierto',
-      createdAt: new Date().toISOString(),
-      empresa: '',
-      sucursal: '',
-      departamento: '',
-      municipio: '',
-      direccion: location,
-    };
-
-    setTickets((prev) => [...prev, newTicket]);
+  // ✅ CREAR TICKET (YA COMPLETO)
+  const addTicket = (ticket: Ticket) => {
+    setTickets((prev) => [...prev, ticket]);
   };
 
-  // ➜ Cambiar estado
-  const updateStatus = (
-    id: string,
-    status: TicketStatus
-  ) => {
-
+  // ✅ ACTUALIZAR ESTADO
+  const updateStatus = (id: string, status: TicketStatus) => {
     setTickets((prev) =>
       prev.map((t) =>
         t.id === id
@@ -56,9 +34,8 @@ export default function AppRoutes() {
     );
   };
 
-  // ➜ Eliminar
+  // ✅ ELIMINAR
   const deleteTicket = (id: string) => {
-
     setTickets((prev) =>
       prev.filter((t) => t.id !== id)
     );
@@ -69,16 +46,19 @@ export default function AppRoutes() {
 
       <Routes>
 
+        {/* REDIRECCIÓN */}
         <Route
           path="/"
-          element={<Navigate to="/dashboard" />}
+          element={<Navigate to="/dashboard" replace />}
         />
 
+        {/* DASHBOARD */}
         <Route
           path="/dashboard"
           element={<Dashboard tickets={tickets} />}
         />
 
+        {/* TICKETS */}
         <Route
           path="/tickets"
           element={
@@ -90,6 +70,7 @@ export default function AppRoutes() {
           }
         />
 
+        {/* NUEVA ORDEN */}
         <Route
           path="/nueva"
           element={
@@ -99,6 +80,7 @@ export default function AppRoutes() {
           }
         />
 
+        {/* MAPA */}
         <Route
           path="/mapa"
           element={

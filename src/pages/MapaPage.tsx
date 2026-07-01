@@ -1,27 +1,19 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { MAPBOX_TOKEN } from '../services/mapboxConfig';
 import type { Ticket } from '../types/tickets';
 
-interface MapboxFeature {
-  id: string;
-  place_name: string;
-  center: [number, number];
-}
+mapboxgl.accessToken = MAPBOX_TOKEN;
 
 interface MapaPageProps {
   tickets: Ticket[];
 }
 
-mapboxgl.accessToken = MAPBOX_TOKEN;
-
-export const MapaPage: React.FC<MapaPageProps> = ({ tickets }) => {
+const MapaPage: React.FC<MapaPageProps> = ({ tickets }) => {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
   const markers = useRef<mapboxgl.Marker[]>([]);
-  const [busqueda, setBusqueda] = useState('');
-  const [sugerencias, setSugerencias] = useState<MapboxFeature[]>([]);
 
   useEffect(() => {
     if (!mapContainer.current || map.current) return;
@@ -29,8 +21,8 @@ export const MapaPage: React.FC<MapaPageProps> = ({ tickets }) => {
     map.current = new mapboxgl.Map({
       container: mapContainer.current,
       style: 'mapbox://styles/mapbox/dark-v11',
-      center: [-90.3833, 14.0833],
-      zoom: 12
+      center: [-90.5, 14.6],
+      zoom: 7
     });
 
     return () => {
@@ -50,10 +42,9 @@ export const MapaPage: React.FC<MapaPageProps> = ({ tickets }) => {
         const marker = new mapboxgl.Marker({ color: '#3b82f6' })
           .setLngLat([t.lng, t.lat])
           .setPopup(
-            new mapboxgl.Popup().setHTML(`
-              <strong>${t.empresa}</strong><br/>
-              ${t.sucursal}
-            `)
+            new mapboxgl.Popup().setHTML(
+              `<strong>${t.empresa}</strong><br/>${t.sucursal}`
+            )
           )
           .addTo(map.current!);
 
@@ -63,7 +54,7 @@ export const MapaPage: React.FC<MapaPageProps> = ({ tickets }) => {
   }, [tickets]);
 
   return (
-    <div style={{ position: 'relative', height: '580px' }}>
+    <div style={{ height: '580px' }}>
       <div ref={mapContainer} style={{ width: '100%', height: '100%' }} />
     </div>
   );
